@@ -17,3 +17,15 @@ func IpAddr(f *goro.Goro) {
 func FromConfig(f *goro.Goro) {
 	f.WriteLine(f.Params.Find("FOO").(string))
 }
+
+// Установка значения сессии
+func SessionSet(f *goro.Goro) {
+	f.Session.Add("test", "ololo")
+	f.WriteLine("Значение cookies установлено")
+}
+
+// Получение значения из сессии
+func SessionGet(f *goro.Goro) {
+	value := f.Session.GetDefault("пвапвапва", "default")
+	f.WriteLine("Значение: " + value)
+}

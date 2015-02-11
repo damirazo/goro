@@ -4,6 +4,7 @@ import "fmt"
 import "net/http"
 import "goro"
 import "example"
+import "os"
 
 const SERVER_PORT = "8080"
 
@@ -12,11 +13,15 @@ var routes = []goro.Route{
 	goro.Route{Url: `^/$`, Handler: example.Index},
 	goro.Route{Url: `^/info`, Handler: example.IpAddr},
 	goro.Route{Url: `^/foo`, Handler: example.FromConfig},
+	goro.Route{Url: `^/session/set`, Handler: example.SessionSet},
+	goro.Route{Url: `^/session/get`, Handler: example.SessionGet},
 }
 
 // Список параметров
 var params = []goro.Config{
 	goro.Config{Name: "DEBUG", Value: true},
+	goro.Config{Name: "SESSION_PATH", Value: "cache"},
+	goro.Config{Name: "SESSION_NAME", Value: "goro_session"},
 	goro.Config{Name: "HOST", Value: "127.0.0.1"},
 	goro.Config{Name: "PORT", Value: SERVER_PORT},
 	goro.Config{Name: "FOO", Value: "BAR"},
@@ -32,8 +37,24 @@ func main() {
 func frameworkHandler(w http.ResponseWriter, r *http.Request) {
 	framework := &goro.Goro{}
 	framework.Request = r
-	framework.Response = w
+	framework.Response = &w
+	// Загрузка маршрутов
 	framework.SetRoutes(routes)
+	// Загрузка параметров
 	framework.SetParams(params)
+	// Загрузка сессий
+	framework.LoadSession()
+	defer framework.DumpSession()
+	// Инициализация фреймворка
 	framework.Run()
+	// Перехват возможных ошибок и выведение в лог
+	defer func() {
+		// TODO: Предусмотреть стек восстановительных задач
+		e := recover()
+		if e == nil {
+			return
+		}
+		fmt.Println(e)
+		os.Exit(3)
+	}()
 }
