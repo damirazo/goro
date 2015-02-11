@@ -1,10 +1,9 @@
 package main
 
 import "fmt"
-import "net/http"
 import "goro"
+import "net/http"
 import "example"
-import "os"
 
 const SERVER_PORT = "8080"
 
@@ -18,13 +17,13 @@ var routes = []goro.Route{
 }
 
 // Список параметров
-var params = []goro.configItem{
-	goro.configItem{Name: "DEBUG", Value: true},
-	goro.configItem{Name: "SESSION_PATH", Value: "cache"},
-	goro.configItem{Name: "SESSION_NAME", Value: "goro_session"},
-	goro.configItem{Name: "HOST", Value: "127.0.0.1"},
-	goro.configItem{Name: "PORT", Value: SERVER_PORT},
-	goro.configItem{Name: "FOO", Value: "BAR"},
+var params = []goro.ConfigItem{
+	goro.ConfigItem{Name: "DEBUG", Value: true},
+	goro.ConfigItem{Name: "SESSION_PATH", Value: "cache"},
+	goro.ConfigItem{Name: "SESSION_NAME", Value: "goro_session"},
+	goro.ConfigItem{Name: "HOST", Value: "127.0.0.1"},
+	goro.ConfigItem{Name: "PORT", Value: SERVER_PORT},
+	goro.ConfigItem{Name: "FOO", Value: "BAR"},
 }
 
 // Точка входа
@@ -47,14 +46,4 @@ func frameworkHandler(w http.ResponseWriter, r *http.Request) {
 	defer framework.DumpSession()
 	// Инициализация фреймворка
 	framework.Run()
-	// Перехват возможных ошибок и выведение в лог
-	defer func() {
-		// TODO: Предусмотреть стек восстановительных задач
-		e := recover()
-		if e == nil {
-			return
-		}
-		fmt.Println(e)
-		os.Exit(3)
-	}()
 }

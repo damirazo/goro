@@ -24,8 +24,8 @@ func (self *Goro) SetRoutes(routes []Route) {
 }
 
 // Установка параметров
-func (self *Goro) SetParams(params []ConfigItem) {
-	registry := ConfigRegistry{Data: params}
+func (self *Goro) SetParams(items []ConfigItem) {
+	registry := ConfigRegistry{Items: items}
 	self.Config = registry
 }
 
@@ -55,20 +55,33 @@ func (self *Goro) DumpSession() {
 
 // Инициализация фреймворка
 func (self *Goro) Run() {
-	self.findRoute()
+	self.runRoute()
 }
 
 // Поиск подходящего под URL маршрута и запуск зарегистрированного обработчика
-func (self *Goro) findRoute() {
+func (self *Goro) runRoute() {
+    var handler func(*Goro)
+    findedRoute := false
 	routes := self.Routes
 	queryString := self.Request.URL.Path
 
+    // Производим поиск подходящего маршрута среди всего списка зарегистрированных
 	for _, route := range routes {
 		if matched, _ := regexp.MatchString(route.Url, queryString); matched == true {
-			route.Handler(self)
-			return
+			handler = route.Handler
+            findedRoute = true
 		}
 	}
+    
+    // Если подходящий маршрут отсутствует, то выводим сообщение об ошибке
+    if !findedRoute {
+        handler = func(f *Goro) {
+            http.Error(*f.Response, "404 page not found", http.StatusNotFound)
+        }
+    }
+    
+    // Запускаем обработчик
+    handler(self)
 }
 
 // Вывод в буфер текстовой строки
@@ -79,4 +92,9 @@ func (self *Goro) Write(s string) {
 // Вывод в буфер текстовой строки с переносом на новую строку
 func (self *Goro) WriteLine(s string) {
 	self.Write(s + "\n")
+}
+
+// Перенаправление на указанную страницу
+func (self *Goro) Redirect(url string) {
+    http.Redirect(*self.Response, self.Request, url, http.StatusOK)
 }
