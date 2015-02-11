@@ -20,7 +20,6 @@ type Session struct {
 func (self *Session) Load() {
 	if self.sessionFileExist() {
 		fileData, err := ioutil.ReadFile(self.sessionFilePath())
-		fmt.Println(string(fileData))
 		HandleError(err)
 		err = json.Unmarshal(fileData, &self.Storage)
 		HandleError(err)
