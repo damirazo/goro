@@ -60,28 +60,28 @@ func (self *Goro) Run() {
 
 // Поиск подходящего под URL маршрута и запуск зарегистрированного обработчика
 func (self *Goro) runRoute() {
-    var handler func(*Goro)
-    findedRoute := false
+	var handler func(*Goro)
+	findedRoute := false
 	routes := self.Routes
 	queryString := self.Request.URL.Path
 
-    // Производим поиск подходящего маршрута среди всего списка зарегистрированных
+	// Производим поиск подходящего маршрута среди всего списка зарегистрированных
 	for _, route := range routes {
 		if matched, _ := regexp.MatchString(route.Url, queryString); matched == true {
 			handler = route.Handler
-            findedRoute = true
+			findedRoute = true
 		}
 	}
-    
-    // Если подходящий маршрут отсутствует, то выводим сообщение об ошибке
-    if !findedRoute {
-        handler = func(f *Goro) {
-            http.Error(*f.Response, "404 page not found", http.StatusNotFound)
-        }
-    }
-    
-    // Запускаем обработчик
-    handler(self)
+
+	// Если подходящий маршрут отсутствует, то выводим сообщение об ошибке
+	if !findedRoute {
+		handler = func(f *Goro) {
+			http.Error(*f.Response, "404 page not found", http.StatusNotFound)
+		}
+	}
+
+	// Запускаем обработчик
+	handler(self)
 }
 
 // Вывод в буфер текстовой строки
@@ -96,5 +96,5 @@ func (self *Goro) WriteLine(s string) {
 
 // Перенаправление на указанную страницу
 func (self *Goro) Redirect(url string) {
-    http.Redirect(*self.Response, self.Request, url, http.StatusOK)
+	http.Redirect(*self.Response, self.Request, url, http.StatusOK)
 }
