@@ -20,12 +20,15 @@ func FromConfig(f *goro.Goro) {
 
 // Установка значения сессии
 func SessionSet(f *goro.Goro) {
-	f.Session.Add("test", "ololo")
-	f.WriteLine("Значение cookies установлено")
+	f.Session.Set("test", "ololodfgdf")
+	f.Session.Set("test2", "ololo3")
+	f.WriteLine("Значения добавлены в сессию")
 }
 
 // Получение значения из сессии
 func SessionGet(f *goro.Goro) {
-	value := f.Session.GetDefault("пвапвапва", "default")
-	f.WriteLine("Значение: " + value)
+    f.WriteLine("Список значений в сессии")
+	for _, item := range f.Session.All() {
+        f.WriteLine("Имя: " + item.Name + ", значение: " + item.Value)
+    }
 }

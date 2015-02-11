@@ -4,15 +4,17 @@ import "os"
 import "path"
 import "io/ioutil"
 import "encoding/json"
-import "fmt"
 import "errors"
 
 var SessionItemNotFound = errors.New("Объект сессии с указанным именем не обнаружен!")
 
 // Базовый объект для хранения информации о сессии
 type Session struct {
+    // Идентификатор текущей сессии
 	Id        string
+    // Ссылка на объект фреймворка
 	Framework *Goro
+    // Хранилище сессии
 	Storage   *SessionStorage
 }
 
@@ -29,8 +31,22 @@ func (self *Session) Load() {
 }
 
 // Добавление значения в сессию
-func (self *Session) Add(name string, value string) {
-	self.Storage.Items = append(self.Storage.Items, &SessionItem{Name: name, Value: value})
+func (self *Session) Set(name string, value string) {
+    if self.Exist(name) {
+        self.replaceValue(name, value)
+    } else {
+        self.Storage.Items = append(self.Storage.Items, &SessionItem{Name: name, Value: value})
+    }
+}
+
+// Заменяет значение, если параметр с указанным именем уже присутствует в сессии
+func (self *Session) replaceValue(name string, value string) {
+    for _, item := range self.All() {
+        if item.Name == name {
+            item.Value = value
+            return 
+        }
+    }
 }
 
 // Получение значения сессии
@@ -48,8 +64,25 @@ func (self *Session) GetDefault(name string, def string) string {
 	value, err := self.Get(name)
 	if err == SessionItemNotFound {
 		return def
-	}
+	} else {
+        HandleError(err)
+    }
 	return value
+}
+
+// Проверка наличия параметра с указанным именем в сессии
+func (self *Session) Exist(name string) bool {
+    for _, item := range self.All() {
+        if item.Name == name {
+            return true
+        }
+    }
+    return false
+}
+
+// Список всех элементов сессии
+func (self *Session) All() []*SessionItem {
+    return self.Storage.Items
 }
 
 // Сохранение сессии
@@ -59,7 +92,6 @@ func (self *Session) Dump() {
 	defer file.Close()
 
 	data, err := json.Marshal(&self.Storage)
-	fmt.Println(string(data))
 	HandleError(err)
 	file.Write(data)
 }
