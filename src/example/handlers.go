@@ -27,8 +27,8 @@ func SessionSet(f *goro.Goro) {
 
 // Получение значения из сессии
 func SessionGet(f *goro.Goro) {
-    f.WriteLine("Список значений в сессии")
+	f.WriteLine("Список значений в сессии")
 	for _, item := range f.Session.All() {
-        f.WriteLine("Имя: " + item.Name + ", значение: " + item.Value)
-    }
+		f.WriteLine("Имя: " + item.Name + ", значение: " + item.Value)
+	}
 }

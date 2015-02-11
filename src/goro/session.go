@@ -10,12 +10,12 @@ var SessionItemNotFound = errors.New("Объект сессии с указан�
 
 // Базовый объект для хранения информации о сессии
 type Session struct {
-    // Идентификатор текущей сессии
-	Id        string
-    // Ссылка на объект фреймворка
+	// Идентификатор текущей сессии
+	Id string
+	// Ссылка на объект фреймворка
 	Framework *Goro
-    // Хранилище сессии
-	Storage   *SessionStorage
+	// Хранилище сессии
+	Storage *SessionStorage
 }
 
 // Загрузка данных из файла в объект сессии
@@ -32,21 +32,21 @@ func (self *Session) Load() {
 
 // Добавление значения в сессию
 func (self *Session) Set(name string, value string) {
-    if self.Exist(name) {
-        self.replaceValue(name, value)
-    } else {
-        self.Storage.Items = append(self.Storage.Items, &SessionItem{Name: name, Value: value})
-    }
+	if self.Exist(name) {
+		self.replaceValue(name, value)
+	} else {
+		self.Storage.Items = append(self.Storage.Items, &SessionItem{Name: name, Value: value})
+	}
 }
 
 // Заменяет значение, если параметр с указанным именем уже присутствует в сессии
 func (self *Session) replaceValue(name string, value string) {
-    for _, item := range self.All() {
-        if item.Name == name {
-            item.Value = value
-            return 
-        }
-    }
+	for _, item := range self.All() {
+		if item.Name == name {
+			item.Value = value
+			return
+		}
+	}
 }
 
 // Получение значения сессии
@@ -65,24 +65,24 @@ func (self *Session) GetDefault(name string, def string) string {
 	if err == SessionItemNotFound {
 		return def
 	} else {
-        HandleError(err)
-    }
+		HandleError(err)
+	}
 	return value
 }
 
 // Проверка наличия параметра с указанным именем в сессии
 func (self *Session) Exist(name string) bool {
-    for _, item := range self.All() {
-        if item.Name == name {
-            return true
-        }
-    }
-    return false
+	for _, item := range self.All() {
+		if item.Name == name {
+			return true
+		}
+	}
+	return false
 }
 
 // Список всех элементов сессии
 func (self *Session) All() []*SessionItem {
-    return self.Storage.Items
+	return self.Storage.Items
 }
 
 // Сохранение сессии
