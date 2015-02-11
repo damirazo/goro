@@ -18,13 +18,13 @@ var routes = []goro.Route{
 }
 
 // Список параметров
-var params = []goro.Config{
-	goro.Config{Name: "DEBUG", Value: true},
-	goro.Config{Name: "SESSION_PATH", Value: "cache"},
-	goro.Config{Name: "SESSION_NAME", Value: "goro_session"},
-	goro.Config{Name: "HOST", Value: "127.0.0.1"},
-	goro.Config{Name: "PORT", Value: SERVER_PORT},
-	goro.Config{Name: "FOO", Value: "BAR"},
+var params = []goro.configItem{
+	goro.configItem{Name: "DEBUG", Value: true},
+	goro.configItem{Name: "SESSION_PATH", Value: "cache"},
+	goro.configItem{Name: "SESSION_NAME", Value: "goro_session"},
+	goro.configItem{Name: "HOST", Value: "127.0.0.1"},
+	goro.configItem{Name: "PORT", Value: SERVER_PORT},
+	goro.configItem{Name: "FOO", Value: "BAR"},
 }
 
 // Точка входа

@@ -15,7 +15,7 @@ func IpAddr(f *goro.Goro) {
 
 // Отображение значения из параметров
 func FromConfig(f *goro.Goro) {
-	f.WriteLine(f.Params.Find("FOO").(string))
+	f.WriteLine(f.Config.Get("FOO").(string))
 }
 
 // Установка значения сессии

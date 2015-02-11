@@ -106,7 +106,7 @@ func (self *Session) sessionFileExist() bool {
 
 // Возвращает полный путь до файла с сессией
 func (self *Session) sessionFilePath() string {
-	return path.Join(self.Framework.Params.Find("SESSION_PATH").(string), self.Id)
+	return path.Join(self.Framework.Config.Get("SESSION_PATH").(string), self.Id)
 }
 
 // Хранилище для данных сессии

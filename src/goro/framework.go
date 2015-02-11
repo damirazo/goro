@@ -13,7 +13,7 @@ type Goro struct {
 	// Список маршрутов
 	Routes []Route
 	// Список параметров
-	Params ConfigRegistry
+	Config ConfigRegistry
 	// Объект сессии
 	Session *Session
 }
@@ -24,15 +24,15 @@ func (self *Goro) SetRoutes(routes []Route) {
 }
 
 // Установка параметров
-func (self *Goro) SetParams(params []Config) {
-	registry := ConfigRegistry{Params: params}
-	self.Params = registry
+func (self *Goro) SetParams(params []ConfigItem) {
+	registry := ConfigRegistry{Data: params}
+	self.Config = registry
 }
 
 // Инициализация сессий
 func (self *Goro) LoadSession() {
 	var uuid string
-	sessionName := self.Params.Find("SESSION_NAME").(string)
+	sessionName := self.Config.Get("SESSION_NAME").(string)
 	sessionCookie, err := self.Request.Cookie(sessionName)
 
 	// Кукисы с нужным значением не нашли, возможно сессия уже устарела или открывается впервые
