@@ -1,6 +1,5 @@
 package goro
 
-import "io"
 import "regexp"
 import "net/http"
 
@@ -8,8 +7,10 @@ import "net/http"
 type Goro struct {
 	// Входящий запрос
 	Request *http.Request
-	// Исходящий запрос
-	Response *http.ResponseWriter
+	// Объект для записи с исходящие данные
+	ResponseWriter *http.ResponseWriter
+	// Объект исходящего запроса
+	Response *Response
 	// Список маршрутов
 	Routes []Route
 	// Список параметров
@@ -55,15 +56,17 @@ func (self *Goro) DumpSession() {
 
 // Инициализация фреймворка
 func (self *Goro) Run() {
-	self.runRoute()
+	self.run()
 }
 
 // Поиск подходящего под URL маршрута и запуск зарегистрированного обработчика
-func (self *Goro) runRoute() {
+func (self *Goro) run() {
 	var handler func(*Goro)
 	findedRoute := false
 	routes := self.Routes
 	queryString := self.Request.URL.Path
+
+	self.Response = &Response{}
 
 	// Производим поиск подходящего маршрута среди всего списка зарегистрированных
 	for _, route := range routes {
@@ -76,25 +79,27 @@ func (self *Goro) runRoute() {
 	// Если подходящий маршрут отсутствует, то выводим сообщение об ошибке
 	if !findedRoute {
 		handler = func(f *Goro) {
-			http.Error(*f.Response, "404 page not found", http.StatusNotFound)
+			//http.Error(*f.ResponseWriter, "404 page not found", http.StatusNotFound)
 		}
 	}
 
 	// Запускаем обработчик
 	handler(self)
+	// Выбрасываем накопленную информацию клиенту
+	self.Response.Flush(*self.ResponseWriter)
 }
 
 // Вывод в буфер текстовой строки
 func (self *Goro) Write(s string) {
-	io.WriteString(*self.Response, s)
+	self.Response.Write(s)
 }
 
 // Вывод в буфер текстовой строки с переносом на новую строку
 func (self *Goro) WriteLine(s string) {
-	self.Write(s + "\n")
+	self.Response.WriteLine(s)
 }
 
 // Перенаправление на указанную страницу
 func (self *Goro) Redirect(url string) {
-	http.Redirect(*self.Response, self.Request, url, http.StatusOK)
+	http.Redirect(*self.ResponseWriter, self.Request, url, http.StatusOK)
 }

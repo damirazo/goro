@@ -36,7 +36,7 @@ func main() {
 func frameworkHandler(w http.ResponseWriter, r *http.Request) {
 	framework := &goro.Goro{}
 	framework.Request = r
-	framework.Response = &w
+	framework.ResponseWriter = &w
 	// Загрузка маршрутов
 	framework.SetRoutes(routes)
 	// Загрузка параметров
